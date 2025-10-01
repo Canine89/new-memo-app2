@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -17,9 +17,10 @@ export async function GET(
       )
     }
 
+    const { id } = await params
     const memo = await prisma.memo.findFirst({
       where: {
-        id: params.id,
+        id,
         userId: session.user.id
       }
     })
@@ -43,7 +44,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -55,6 +56,7 @@ export async function PUT(
       )
     }
 
+    const { id } = await params
     const { title, content } = await request.json()
 
     if (!title || !content) {
@@ -66,7 +68,7 @@ export async function PUT(
 
     const memo = await prisma.memo.findFirst({
       where: {
-        id: params.id,
+        id,
         userId: session.user.id
       }
     })
@@ -80,7 +82,7 @@ export async function PUT(
 
     const updatedMemo = await prisma.memo.update({
       where: {
-        id: params.id
+        id
       },
       data: {
         title,
@@ -100,7 +102,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -112,9 +114,10 @@ export async function DELETE(
       )
     }
 
+    const { id } = await params
     const memo = await prisma.memo.findFirst({
       where: {
-        id: params.id,
+        id,
         userId: session.user.id
       }
     })
@@ -128,7 +131,7 @@ export async function DELETE(
 
     await prisma.memo.delete({
       where: {
-        id: params.id
+        id
       }
     })
 
